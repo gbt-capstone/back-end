@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from toilet.views import fetch_and_save_toilet_data
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/toilet/get', fetch_and_save_toilet_data),
 ]
