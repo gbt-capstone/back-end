@@ -18,8 +18,16 @@ from django.contrib import admin
 from django.urls import path
 
 from toilet.views import fetch_and_save_toilet_data
+from toilet.views import create_toilet
+from toilet.views import get_toilet
+from toilet.views import get_all_toilets
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/toilet/get', fetch_and_save_toilet_data),
+    path('api/toilet/post/', fetch_and_save_toilet_data, name = 'fetch_toilet_data'),
+    path('', fetch_and_save_toilet_data, name='empty_path'),
+    path('api/toilet/create/', create_toilet, name='create_toilet'),
+    path('api/toilet/<int:toilet_id>/', get_toilet, name='get_toilet'),
+    path('api/toilet/', get_all_toilets, name='get_all_toilets'),
+
 ]
