@@ -1,6 +1,6 @@
 import requests
+import json
 from django.shortcuts import render
-from django.http.response import HttpResponse
 from .models import Toilet
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -55,14 +55,20 @@ def fetch_and_save_toilet_data(request):
 def create_toilet(request):
     
     if request.method == 'POST':
+        data = json.loads(request.body)
+        id = data.get("id")
+        area = data.get("area")
+        name = data.get("name")
+        address = data.get("address")
+        using = data.get("using")
+        bellYN = data.get("bellYN")
         
-        id = request.POST.get("id")
-        area = request.POST.get("area")
-        name = request.POST.get("name")
-        address = request.POST.get("address")
-        using = request.POST.get("using")
-        bellYN = request.POST.get("bellYN")
-        
+        if Toilet.objects.filter(id=id).exists():
+            response_data = {
+                'message': 'Error',
+                'error': 'Already exist ID'
+            }
+            return JsonResponse(response_data, status=400)
 
         toilet = Toilet(
             id=id,
@@ -81,18 +87,24 @@ def create_toilet(request):
         return JsonResponse(response_data)
     
 @csrf_exempt
-def get_toilet(request, toilet_id):
-    if request.method == 'GET':
-        toilet = get_object_or_404(Toilet, id=toilet_id)
-        toilet_data = {
-            'id': toilet.id,
-            'area': toilet.area,
-            'name': toilet.name,
-            'address': toilet.address,
-            'using': toilet.using,
-            'bellYN': toilet.bellYN
-        }
-        return JsonResponse(toilet_data)
+def get_toilet(request):
+    toilet_id = request.GET.get('id')
+    if toilet_id:
+        try:
+            toilet = Toilet.objects.get(id=toilet_id)
+            toilet_data = {
+                'id': toilet.id,
+                'area': toilet.area,
+                'name': toilet.name,
+                'address': toilet.address,
+                'using': toilet.using,
+                'bellYN': toilet.bellYN
+            }
+            return JsonResponse(toilet_data)
+        except Toilet.DoesNotExist:
+            return JsonResponse({'message': 'Toilet not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Missing toilet_id parameter'}, status=400)
 
 
 @csrf_exempt
@@ -111,3 +123,39 @@ def get_all_toilets(request):
             }
             toilet_list.append(toilet_data)
         return JsonResponse(toilet_list, safe=False)
+
+@csrf_exempt
+def update_toilet(request):
+    toilet_id = request.GET.get('id')
+    if toilet_id:
+        try:
+            toilet = Toilet.objects.get(id=toilet_id)
+            if 'area' in request.GET:
+                toilet.area = request.GET.get('area')
+            if 'name' in request.GET:
+                toilet.name = request.GET.get('name')
+            if 'address' in request.GET:
+                toilet.address = request.GET.get('address')
+            if 'using' in request.GET:
+                toilet.using = request.GET.get('using')
+            if 'bellYN' in request.GET:
+                toilet.bellYN = request.GET.get('bellYN')
+            toilet.save()
+            return JsonResponse({'message': 'Success'})
+        except Toilet.DoesNotExist:
+            return JsonResponse({'message': 'Toilet not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Missing toilet_id parameter'}, status=400)
+
+@csrf_exempt
+def delete_toilet(request):
+    toilet_id = request.GET.get('id')
+    if toilet_id:
+        try:
+            toilet = Toilet.objects.get(id=toilet_id)
+            toilet.delete()
+            return JsonResponse({'message': 'Success'})
+        except Toilet.DoesNotExist:
+            return JsonResponse({'message': 'Toilet not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Missing toilet_id parameter'}, status=400)

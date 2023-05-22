@@ -17,17 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from toilet.views import fetch_and_save_toilet_data
-from toilet.views import create_toilet
-from toilet.views import get_toilet
-from toilet.views import get_all_toilets
+from toilet.views import fetch_and_save_toilet_data, create_toilet #C
+from toilet.views import get_toilet, get_all_toilets #R
+from toilet.views import update_toilet #U
+from toilet.views import delete_toilet #D
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/toilet/post/', fetch_and_save_toilet_data, name = 'fetch_toilet_data'),
-    path('', fetch_and_save_toilet_data, name='empty_path'),
+    path('api/toilet/post/', fetch_and_save_toilet_data, name='fetch_toilet_data'),
     path('api/toilet/create/', create_toilet, name='create_toilet'),
-    path('api/toilet/<int:toilet_id>/', get_toilet, name='get_toilet'),
-    path('api/toilet/', get_all_toilets, name='get_all_toilets'),
+    path('api/toilet/', get_toilet, name='get_toilet'),
+    path('api/toilet/all/', get_all_toilets, name='get_all_toilets'),
+    path('api/toilet/update/', update_toilet, name='update_toilet'),
+    path('api/toilet/delete/', delete_toilet, name='delete_toilet'),
 
 ]
