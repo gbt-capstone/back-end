@@ -4,7 +4,6 @@ from django.shortcuts import render
 from .models import Toilet
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 
 # Create your views here.
 # def main(request):
@@ -62,6 +61,16 @@ def create_toilet(request):
         address = data.get("address")
         using = data.get("using")
         bellYN = data.get("bellYN")
+        for_disabled = data.get("for_disabled")
+        separate = data.get("separate")
+        toilet_count = data.get("toilet_count")
+        washstand = data.get("washstand")
+        hand_sanitizer = data.get("hand_sanitizer")
+        toilet_paper = data.get("toilet_paper")
+        for_children = data.get("for_children")
+        diaper_change = data.get("diaper_change")
+        women_safe = data.get("women_safe")
+        cleanliness = data.get("cleanliness")
         
         if Toilet.objects.filter(id=id).exists():
             response_data = {
@@ -76,7 +85,19 @@ def create_toilet(request):
             name=name,
             address=address,
             using=using,
-            bellYN=bellYN
+            bellYN=bellYN,
+            for_disabled=for_disabled,
+            separate=separate,
+            toilet_count=toilet_count,
+            washstand=washstand,
+            hand_sanitizer=hand_sanitizer,
+            toilet_paper=toilet_paper,
+            for_children=for_children,
+            diaper_change=diaper_change,
+            women_safe=women_safe,
+            cleanliness=cleanliness
+            
+            
         )
         toilet.save()
         
@@ -98,7 +119,18 @@ def get_toilet(request):
                 'name': toilet.name,
                 'address': toilet.address,
                 'using': toilet.using,
-                'bellYN': toilet.bellYN
+                'bellYN': toilet.bellYN,
+                'for_disabled' : toilet.for_disabled,
+                'separate' : toilet.separate,
+                'toilet_count' : toilet.toilet_count,
+                'washstand' : toilet.washstand,
+                'hand_sanitizer' : toilet.hand_sanitizer,
+                'toilet_paper' : toilet.toilet_paper,
+                'for_children' : toilet.for_children,
+                'diaper_change' : toilet.diaper_change,
+                'women_safe' : toilet.women_safe,
+                'cleanliness' : toilet.cleanliness
+                
             }
             return JsonResponse(toilet_data)
         except Toilet.DoesNotExist:
@@ -119,7 +151,17 @@ def get_all_toilets(request):
                 'name': toilet.name,
                 'address': toilet.address,
                 'using': toilet.using,
-                'bellYN': toilet.bellYN
+                'bellYN': toilet.bellYN,
+                'for_disabled' : toilet.for_disabled,
+                'separate' : toilet.separate,
+                'toilet_count' : toilet.toilet_count,
+                'washstand' : toilet.washstand,
+                'hand_sanitizer' : toilet.hand_sanitizer,
+                'toilet_paper' : toilet.toilet_paper,
+                'for_children' : toilet.for_children,
+                'diaper_change' : toilet.diaper_change,
+                'women_safe' : toilet.women_safe,
+                'cleanliness' : toilet.cleanliness
             }
             toilet_list.append(toilet_data)
         return JsonResponse(toilet_list, safe=False)
@@ -140,6 +182,26 @@ def update_toilet(request):
                 toilet.using = request.GET.get('using')
             if 'bellYN' in request.GET:
                 toilet.bellYN = request.GET.get('bellYN')
+            if 'for_disabled' in request.GET:
+                toilet.bellYN = request.GET.get('for_disabled')
+            if 'separate' in request.GET:
+                toilet.bellYN = request.GET.get('separate')
+            if 'toilet_count' in request.GET:
+                toilet.bellYN = request.GET.get('toilet_count')
+            if 'washstand' in request.GET:
+                toilet.bellYN = request.GET.get('washstand')
+            if 'hand_sanitizer' in request.GET:
+                toilet.bellYN = request.GET.get('hand_sanitizer')
+            if 'toilet_paper' in request.GET:
+                toilet.bellYN = request.GET.get('toilet_paper')
+            if 'for_children' in request.GET:
+                toilet.bellYN = request.GET.get('for_children')
+            if 'diaper_change' in request.GET:
+                toilet.bellYN = request.GET.get('diaper_change')
+            if 'women_safe' in request.GET:
+                toilet.bellYN = request.GET.get('women_safe')
+            if 'cleanliness' in request.GET:
+                toilet.bellYN = request.GET.get('cleanliness')
             toilet.save()
             return JsonResponse({'message': 'Success'})
         except Toilet.DoesNotExist:
