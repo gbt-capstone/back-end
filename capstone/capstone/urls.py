@@ -30,5 +30,4 @@ urlpatterns = [
     path('api/toilet/all/', get_all_toilets, name='get_all_toilets'),
     path('api/toilet/update/', update_toilet, name='update_toilet'),
     path('api/toilet/delete/', delete_toilet, name='delete_toilet'),
-
 ]
