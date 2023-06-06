@@ -2,8 +2,10 @@ import requests
 import json
 from django.shortcuts import render
 from .models import Toilet
+from .models import Review
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 # def main(request):
@@ -221,3 +223,90 @@ def delete_toilet(request):
             return JsonResponse({'message': 'Toilet not found'}, status=404)
     else:
         return JsonResponse({'message': 'Missing toilet_id parameter'}, status=400)
+    
+@csrf_exempt
+def create_review(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        toilet_id = data.get("toilet")
+        user_name = data.get("user_name")
+        review_id = data.get("review_id")
+        comment = data.get("comment")
+        created_at = data.get("created_at")
+
+        try:
+            toilet = Toilet.objects.get(id=toilet_id)
+        except Toilet.DoesNotExist:
+            response_data = {
+                'message': 'Error',
+                'error': 'Toilet not found'
+            }
+            return JsonResponse(response_data, status=400)
+
+        if Review.objects.filter(review_id=review_id).exists():
+            response_data = {
+                'message': 'Error',
+                'error': 'Already exist ID'
+            }
+            return JsonResponse(response_data, status=400)
+
+        review = Review(
+            toilet=toilet,
+            user_name=user_name,
+            review_id=review_id,
+            comment=comment,
+            created_at=created_at
+        )
+        review.save()
+
+        response_data = {
+            'message': 'Success'
+        }
+
+        return JsonResponse(response_data)
+        
+@csrf_exempt
+def get_review(request):
+    if request.method == 'GET':
+        reviews = Review.objects.all()
+        review_list = []
+        for review in reviews:
+            review_data = {
+                'user_name': review.user_name,
+                'review_id': review.review_id,
+                'comment': review.comment,
+                'created_at': review.created_at,
+                'toilet_id' : review.toilet_id,
+            }
+            review_list.append(review_data)
+        return JsonResponse(review_list, safe=False)
+
+@csrf_exempt
+def update_review(request):
+    review_id = request.GET.get('review_id')
+    if review_id:
+        try:
+            review = Review.objects.get(review_id=review_id)
+            if 'user_name' in request.GET:
+                review.user_name = request.Get.get('user_name')
+            if 'comment' in request.GET:
+                review.comment = request.Get.get('comment')
+            review.save()
+            return JsonResponse({'message : Success'})
+        except Review.DoesNotExist:
+            return JsonResponse({'message': 'Review not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Missing review_id parameter'}, status=400)
+    
+@csrf_exempt
+def delete_review(request):
+    review_id = request.GET.get('review_id')
+    if review_id:
+        try:
+            review = Review.objects.get(review_id=review_id)
+            review.delete()
+            return JsonResponse({'message': 'Success'})
+        except Review.DoesNotExist:
+            return JsonResponse({'message': 'Review not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Missing Review_id parameter'}, status=400)

@@ -20,6 +20,7 @@ class Toilet(models.Model):
     women_safe=models.CharField(max_length=10, verbose_name='여성 안심 화장실', null=True)
     cleanliness=models.FloatField(verbose_name='청결도', default=0)
     
+    
     def __str__(self):
         return self.name
 
@@ -27,3 +28,19 @@ class Toilet(models.Model):
         db_table = 'capstone_toilet'
         verbose_name = '화장실'
         verbose_name_plural = '화장실'
+
+
+class Review(models.Model):
+    toilet = models.ForeignKey(Toilet, on_delete=models.CASCADE)
+    user_name = models.CharField(max_length=50, verbose_name='사용자 이름')
+    review_id = models.IntegerField(primary_key=True)
+    comment = models.TextField(verbose_name='리뷰 내용')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Review by {self.user_name} for {self.toilet.name}"
+
+    class Meta:
+        db_table = 'capstone_review'
+        verbose_name = '리뷰'
+        verbose_name_plural = '리뷰'
